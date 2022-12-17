@@ -65,12 +65,13 @@ def print_hi2():
     spaceOffGround = 3
     xOrigin = 3
     numRocks = 0
-    maxRocks = 2022
-    # maxRocks = 10
+    # maxRocks = 2022
+    maxRocks = 1
     currentRock = -1
     currentGasIndex = -1
     occupied = set([])
 
+    print(len(moves))
     def getNextGas():
         nonlocal currentGasIndex
 
@@ -88,7 +89,24 @@ def print_hi2():
         return currentRock
 
     def isInvalidCoordSpace(coord):
-        return (coord in occupied) or not(isInBounds(coord, 7, math.inf))
+        return (coord in occupied) or not(isInBounds(coord, 6, math.inf))
+
+    def printState(occ, currentCoords):
+        maxY = max([x[1] for x in list(occ) + currentCoords])
+
+        for y in range(maxY, -1, -1):
+            line = ''
+            for x in range(0,9):
+                if x == 0 or x == 8:
+                    line += '|'
+                elif (x,y) in occ:
+                    line += '#'
+                elif (x,y) in currentCoords:
+                    line += '@'
+                else:
+                    line += '.'
+            print(line)
+
 
     while numRocks <= maxRocks:
         # handle rock fall
@@ -103,23 +121,24 @@ def print_hi2():
             # print(currentRockCoords)
             if moveRight:
                 gasDirection = getNextGas()
-                # print('rock moving', 'right' if gasDirection == '>' else 'left')
+                print('rock moving', 'right' if gasDirection == '>' else 'left')
                 prospectiveMove = moveDirection(currentRockCoords, gasDirection)
                 if not any([isInvalidCoordSpace(x) for x in prospectiveMove]):
                     currentRockCoords = prospectiveMove
-                # else:
-                    # print('but nothing happens')
+                else:
+                    print('but nothing happens')
             else:
-                # print('rock moving down')
+                print('rock moving down')
                 prospectiveMove = moveDirection(currentRockCoords, 'v')
                 if any([isInvalidCoordSpace(x) for x in prospectiveMove]):
-                    # print('but nothing happens')
+                    print('but nothing happens')
                     break
                 else:
                     currentRockCoords = prospectiveMove
             moveRight = not moveRight
 
-        # print('rock come to rest')
+        print('rock come to rest')
+        printState(occupied, currentRockCoords)
         for x in currentRockCoords:
             occupied.add(x)
         maxY = max(x[1] for x in currentRockCoords)
